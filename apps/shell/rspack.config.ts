@@ -1,10 +1,17 @@
-const { NxAppRspackPlugin } = require('@nx/rspack/app-plugin');
-const { NxReactRspackPlugin } = require('@nx/rspack/react-plugin');
-const { join } = require('path');
+import { NxAppRspackPlugin } from '@nx/rspack/app-plugin.js';
+import { NxReactRspackPlugin } from '@nx/rspack/react-plugin.js';
+import {
+  NxModuleFederationPlugin,
+  NxModuleFederationDevServerPlugin,
+} from '@nx/module-federation/rspack.js';
+import { join } from 'path';
 
-module.exports = {
+import config from './module-federation.config';
+
+export default {
   output: {
     path: join(__dirname, 'dist'),
+    publicPath: 'auto',
   },
   devServer: {
     port: 4200,
@@ -17,7 +24,7 @@ module.exports = {
   plugins: [
     new NxAppRspackPlugin({
       tsConfig: './tsconfig.app.json',
-      main: './src/main.tsx',
+      main: './src/main.ts',
       index: './src/index.html',
       baseHref: '/',
       assets: ['./src/favicon.ico', './src/assets'],
@@ -30,5 +37,7 @@ module.exports = {
       // See: https://react-svgr.com/
       // svgr: false
     }),
+    new NxModuleFederationPlugin({ config }, { dts: false }),
+    new NxModuleFederationDevServerPlugin({ config }),
   ],
 };

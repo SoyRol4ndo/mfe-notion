@@ -23,9 +23,25 @@
     "src/**/*.test.js",
     "src/**/*.spec.jsx",
     "src/**/*.test.jsx",
+    "jest.config.ts",
+    "jest.config.cts",
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
   ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
+  "references": [
+    {
+      "path": "../calendar/tsconfig.app.json"
+    },
+    {
+      "path": "../tasks/tsconfig.app.json"
+    },
+    {
+      "path": "../workspace/tsconfig.app.json"
+    },
+    {
+      "path": "../notes/tsconfig.app.json"
+    }
+  ]
 }
