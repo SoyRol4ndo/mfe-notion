@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { nanoid } from 'nanoid';
-import { GlobalState, Page } from '../types';
+import type { Column, GlobalState, Page, Task } from '../types';
 
 const initialWorkspaceId = 'ws-1';
 
@@ -29,23 +29,37 @@ const initialState: Pick<
   selectedPageId: 'page-1',
 };
 
-export const useGlobalStore = create<GlobalState>((set, get) => ({
-  ...initialState,
+const initialColumns: Column[] = [
+  { id: 'col-todo', title: 'To Do', workspaceId: initialWorkspaceId, order: 1 },
+  { id: 'col-doing', title: 'Doing', workspaceId: initialWorkspaceId, order: 2 },
+  { id: 'col-done', title: 'Done', workspaceId: initialWorkspaceId, order: 3 },
+];
 
-  get selectedWorkspace() {
-    const { workspaces, selectedWorkspaceId } = get();
-    return workspaces.find( (w) => w.id === selectedWorkspaceId) ?? null
+const initialTasks: Task[] = [
+  {
+    id: 'task-1',
+    title: 'Crea tu primer tablero Kanban',
+    description: 'Puedes mover tareas entre columnas en futuros pasos.',
+    columnId: 'col-todo',
+    workspaceId: initialWorkspaceId,
+    updatedAt: new Date().toISOString(),
   },
-  get selectedPage() {
-    const { selectedPageId, pages } = get();
-    return pages.find( (p) =>  p.id === selectedPageId) ?? null
-  },
-    setTheme: (theme) => set({ theme }),
+];
+
+export const useGlobalStore = create<GlobalState>((set, get) => ({
+  // -------- STATE BASE --------
+  ...initialState,
+  columns: initialColumns,
+  tasks: initialTasks,
+
+  // -------- THEME --------
+  setTheme: (theme) => set({ theme }),
   toggleTheme: () =>
     set((state) => ({
       theme: state.theme === 'dark' ? 'light' : 'dark',
     })),
 
+  // -------- WORKSPACE / SELECCIÓN --------
   selectWorkspace: (id) =>
     set((state) => {
       const workspaceExists = state.workspaces.some((w) => w.id === id);
@@ -58,10 +72,11 @@ export const useGlobalStore = create<GlobalState>((set, get) => ({
 
   selectPage: (id) => set({ selectedPageId: id }),
 
+  // -------- PAGES (NOTES) --------
   createPage: (title = 'Untitled') =>
     set((state) => {
       const workspaceId = state.selectedWorkspaceId ?? initialWorkspaceId;
-      const id = nanoid(); // id único
+      const id = nanoid();
 
       const newPage: Page = {
         id,
@@ -109,4 +124,68 @@ export const useGlobalStore = create<GlobalState>((set, get) => ({
         selectedPageId,
       };
     }),
-}))
+
+  // -------- COLUMNS (KANBAN) --------
+  createColumn: (title) =>
+    set((state) => {
+      const id = `col-${Date.now()}`;
+      const workspaceId = state.selectedWorkspaceId ?? initialWorkspaceId;
+
+      const newCol: Column = {
+        id,
+        title,
+        workspaceId,
+        order: state.columns.length + 1,
+      };
+
+      return {
+        ...state,
+        columns: [...state.columns, newCol],
+      };
+    }),
+
+  // -------- TASKS (KANBAN) --------
+  createTask: (columnId, title) =>
+    set((state) => {
+      const id = `task-${Date.now()}`;
+      const workspaceId = state.selectedWorkspaceId ?? initialWorkspaceId;
+
+      const newTask: Task = {
+        id,
+        title,
+        description: '',
+        columnId,
+        workspaceId,
+        updatedAt: new Date().toISOString(),
+      };
+
+      return {
+        ...state,
+        tasks: [...state.tasks, newTask],
+      };
+    }),
+
+  updateTask: (taskId, data) =>
+    set((state) => ({
+      ...state,
+      tasks: state.tasks.map((t) =>
+        t.id === taskId
+          ? { ...t, ...data, updatedAt: new Date().toISOString() }
+          : t
+      ),
+    })),
+
+  moveTaskToColumn: (taskId, columnId) =>
+    set((state) => ({
+      ...state,
+      tasks: state.tasks.map((t) =>
+        t.id === taskId ? { ...t, columnId } : t
+      ),
+    })),
+
+  deleteTask: (taskId) =>
+    set((state) => ({
+      ...state,
+      tasks: state.tasks.filter((t) => t.id !== taskId),
+    })),
+}));
