@@ -1,2 +1,2 @@
-export * from './lib/shared';
-export * from './lib/ui/Button'
+export * from './ui/Button';
+export * from './store/useGlobalStore'

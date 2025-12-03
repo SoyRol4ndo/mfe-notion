@@ -5,6 +5,25 @@ const config: ModuleFederationConfig = {
   exposes: {
     './Module': './src/remote-entry.ts',
   },
+  shared: (libraryName, defaultConfig) => {
+    if (['react', 'react-dom'].includes(libraryName)) {
+      return {
+        ...defaultConfig,
+        singleton: true,
+        strictVersion: true,
+      };
+    }
+
+    if (['zustand'].includes(libraryName)) {
+      return {
+        ...defaultConfig,
+        singleton: true,
+        strictVersion: false,
+      };
+    }
+
+    return defaultConfig;
+  },
 };
 
 /**

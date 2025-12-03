@@ -2,7 +2,9 @@
   "name": "@mfe-notion/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+  "clean": "find . -type d -name 'dist' -exec rm -rf {} +"
+},
   "private": true,
   "dependencies": {
     "react": "^19.0.0",
