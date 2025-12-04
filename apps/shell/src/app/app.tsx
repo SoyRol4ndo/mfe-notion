@@ -1,3 +1,4 @@
+import { Loading } from '@mfe-notion/shared';
 import * as React from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 
@@ -9,7 +10,7 @@ const Calendar = React.lazy(() => import('calendar/Module'));
 
 export function App() {
   return (
-    <React.Suspense fallback={<div className="p-4">Loading module...</div>}>
+    <React.Suspense fallback={<Loading />}>
       <div className="min-h-screen flex bg-slate-950 text-slate-100">
         {/* Sidebar */}
         <aside className="w-64 border-r border-slate-800 bg-slate-900/80 p-4 flex flex-col">

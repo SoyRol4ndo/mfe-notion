@@ -2,6 +2,7 @@ import { Page, Workspace } from 'shared/src/types';
 import '../styles.css';
 
 import { useGlobalStore } from '@mfe-notion/shared';
+import { Link } from 'react-router-dom';
 
 export function App() {
   const pages = useGlobalStore((s) => s.pages);
@@ -30,20 +31,32 @@ export function App() {
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {pages.map((page: Page) => (
-          <article
+          <Link
+            to="/notes"
             key={page.id}
             className={`rounded-lg border p-3 cursor-pointer text-sm ${
               page.id === selectedPageId
                 ? 'border-sky-400 bg-slate-900'
                 : 'border-slate-700 bg-slate-900/40'
             }`}
-            onClick={() => selectPage(page.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              selectPage(page.id);
+            }}
           >
             <h3 className="font-semibold mb-1">{page.title || 'Untitled'}</h3>
             <p className="text-xs text-slate-400 line-clamp-2 whitespace-pre-line">
               {page.content || 'Empty page'}
             </p>
-          </article>
+
+            <p className="mt-2 text-[10px] text-slate-500">
+              Last update:{' '}
+              {new Date(page.updatedAt).toLocaleString(undefined, {
+                dateStyle: 'short',
+                timeStyle: 'short',
+              })}
+            </p>
+          </Link>
         ))}
       </section>
 

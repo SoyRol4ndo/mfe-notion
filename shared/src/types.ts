@@ -65,7 +65,7 @@ export interface GlobalState {
   createColumn: (title: string) => void;
 
   // --- ACTIONS: TASKS (KANBAN) ---
-  createTask: (columnId: string, title: string) => void;
+  createTask: (columnId: string, title: string, description?: string) => void;
   updateTask: (taskId: string, data: Partial<Task>) => void;
   moveTaskToColumn: (taskId: string, columnId: string) => void;
   deleteTask: (taskId: string) => void;

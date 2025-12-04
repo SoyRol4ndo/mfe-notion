@@ -145,7 +145,7 @@ export const useGlobalStore = create<GlobalState>((set, get) => ({
     }),
 
   // -------- TASKS (KANBAN) --------
-  createTask: (columnId, title) =>
+  createTask: (columnId, title, description = '') =>
     set((state) => {
       const id = `task-${Date.now()}`;
       const workspaceId = state.selectedWorkspaceId ?? initialWorkspaceId;
@@ -153,7 +153,7 @@ export const useGlobalStore = create<GlobalState>((set, get) => ({
       const newTask: Task = {
         id,
         title,
-        description: '',
+        description,
         columnId,
         workspaceId,
         updatedAt: new Date().toISOString(),
