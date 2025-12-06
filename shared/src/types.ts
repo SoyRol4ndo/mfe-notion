@@ -11,6 +11,8 @@ export type Page = {
   title: string;
   content: string;
   updatedAt: string;
+  scheduledStart?: string;
+  scheduledEnd?: string;
 };
 
 // KANBAN: COLUMNS
@@ -29,6 +31,8 @@ export type Task = {
   columnId: string;
   workspaceId: string;
   updatedAt: string;
+  scheduledStart?: string;
+  scheduledEnd?: string;
 };
 
 // THEME
@@ -36,6 +40,8 @@ export type Theme = 'light' | 'dark';
 
 // SHAPE DEL STORE GLOBAL
 export interface GlobalState {
+  createTaskWithSchedule: any;
+  createPageWithSchedule: any;
   // --- STATE ---
   theme: Theme;
 

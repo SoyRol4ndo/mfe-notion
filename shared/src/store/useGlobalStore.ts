@@ -188,4 +188,63 @@ export const useGlobalStore = create<GlobalState>((set, get) => ({
       ...state,
       tasks: state.tasks.filter((t) => t.id !== taskId),
     })),
+  // ----------------------------
+  // ▶ CALENDAR: PAGES PLANIFICADAS
+  // ----------------------------
+  createPageWithSchedule: ({ title = '', content = '', workspaceId = '', startDate = '', endDate = '' }) =>
+    set((state) => {
+      const wsId = workspaceId ?? state.selectedWorkspaceId ?? initialWorkspaceId;
+      const id = nanoid();
+
+      const page: Page = {
+        id,
+        workspaceId: wsId,
+        title: title || 'Untitled',
+        content,
+        updatedAt: new Date().toISOString(),
+        scheduledStart: startDate,
+        scheduledEnd: endDate ?? startDate,
+      };
+
+      return {
+        ...state,
+        pages: [page, ...state.pages],
+        selectedPageId: id,
+      };
+    }),
+  // ----------------------------
+  // ▶ CALENDAR: TASKS PLANIFICADAS
+  // ----------------------------
+  createTaskWithSchedule: ({ title = '', description = '', workspaceId='', startDate='', endDate='' }) =>
+    set((state) => {
+      const wsId = workspaceId ?? state.selectedWorkspaceId ?? initialWorkspaceId;
+
+      // buscamos una columna del workspace; si no hay, usamos la primera
+      const colForWs = state.columns.find((c) => c.workspaceId === wsId);
+      const fallbackCol = state.columns[0];
+
+      if (!colForWs && !fallbackCol) {
+        // si no hay columnas, simplemente no creamos nada (demo simple)
+        return state;
+      }
+
+      const columnId = colForWs?.id ?? fallbackCol.id;
+      const id = `task-${Date.now()}`;
+
+      const task: Task = {
+        id,
+        title: title || 'Untitled task',
+        description,
+        columnId,
+        workspaceId: wsId,
+        updatedAt: new Date().toISOString(),
+        scheduledStart: startDate,
+        scheduledEnd: endDate ?? startDate,
+      };
+
+      return {
+        ...state,
+        tasks: [...state.tasks, task],
+      };
+    }),
 }));
