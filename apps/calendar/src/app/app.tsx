@@ -1,7 +1,8 @@
 import '../styles.css';
 import * as React from 'react';
-import { useGlobalStore } from '@mfe-notion/shared';
+import { Button, Input, useGlobalStore } from '@mfe-notion/shared';
 import { Page, Task } from 'shared/src/types';
+import { IoMdArrowRoundBack, IoMdArrowForward } from 'react-icons/io';
 
 type CalendarItem =
   | { kind: 'page'; page: Page; dateKey: string }
@@ -221,19 +222,9 @@ export function App() {
           </p>
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <button
-            className="px-2 py-1 border border-slate-700 rounded hover:border-sky-400"
-            onClick={goPrevMonth}
-          >
-            ←
-          </button>
+          <Button onClick={goPrevMonth} icon={<IoMdArrowRoundBack />} />
           <span className="px-2">{monthLabel}</span>
-          <button
-            className="px-2 py-1 border border-slate-700 rounded hover:border-sky-400"
-            onClick={goNextMonth}
-          >
-            →
-          </button>
+          <Button onClick={goNextMonth} icon={<IoMdArrowForward />} />
         </div>
       </header>
 
@@ -376,16 +367,14 @@ export function App() {
             </div>
 
             <div>
-              <label className="block text-[10px] text-slate-400 mb-1">
-                Título
-              </label>
-              <input
+              <Input
                 className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 outline-none text-xs"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={
                   type === 'page' ? 'Título de la nota' : 'Título de la tarea'
                 }
+                label="Título"
               />
             </div>
 
@@ -406,12 +395,7 @@ export function App() {
             </div>
 
             <div className="flex justify-end mt-1">
-              <button
-                type="submit"
-                className="px-3 py-1 rounded border border-sky-500 bg-sky-600/20 hover:bg-sky-600/40 text-[11px]"
-              >
-                Añadir al calendario
-              </button>
+              <Button type="submit">Añadir al calendario</Button>
             </div>
           </form>
 
