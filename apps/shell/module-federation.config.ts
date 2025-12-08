@@ -18,10 +18,23 @@ const config: ModuleFederationConfig = {
         strictVersion: false,
       };
     }
+    if (libraryName === 'react-router-dom') {
+      return {
+        ...defaultConfig,
+        singleton: true,
+        strictVersion: true,
+      };
+    }
 
     return defaultConfig;
   },
-  remotes: ['notes', 'workspace', 'tasks', 'calendar'],
+  
+  remotes: [
+    ['notes', 'http://localhost:4201/remoteEntry.js'],
+    ['workspace', 'http://localhost:4202/remoteEntry.js'],
+    ['tasks', 'http://localhost:4203/remoteEntry.js'],
+    ['calendar', 'http://localhost:4204/remoteEntry.js'], 
+  ],
 };
 
 /**

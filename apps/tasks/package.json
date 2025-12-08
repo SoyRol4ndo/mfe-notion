@@ -10,8 +10,7 @@
           "port": 4203
         },
         "dependsOn": [
-          "typecheck",
-          "shell:serve"
+          "typecheck"
         ]
       },
       "build": {

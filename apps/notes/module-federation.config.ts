@@ -21,6 +21,13 @@ const config: ModuleFederationConfig = {
         strictVersion: false,
       };
     }
+     if (libraryName === 'zustand') {
+      return {
+        ...defaultConfig,
+        singleton: true,
+        strictVersion: false,
+      };
+    }
 
     return defaultConfig;
   },

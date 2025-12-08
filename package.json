@@ -2,8 +2,13 @@
   "name": "@mfe-notion/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {
-    "clean": "find . -type d -name 'dist' -exec rm -rf {} +"
+ "scripts": {
+    "calendar": "nx serve calendar",
+    "notes": "nx serve notes",
+    "tasks": "nx serve tasks",
+    "workspace": "nx serve workspace",
+    "shell": "nx serve shell",
+    "dev": "nx run-many --target=serve --projects=calendar,notes,tasks,workspace,shell --parallel"
   },
   "private": true,
   "dependencies": {
