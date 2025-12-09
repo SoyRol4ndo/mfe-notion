@@ -1,4 +1,5 @@
-import { Loading } from '@mfe-notion/shared';
+import { Button, Loading, useTheme } from '@mfe-notion/shared';
+import clsx from 'clsx';
 import * as React from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 
@@ -9,9 +10,12 @@ const Tasks = React.lazy(() => import('tasks/Module'));
 const Calendar = React.lazy(() => import('calendar/Module'));
 
 export function App() {
+  const { theme, toggleTheme, palette } = useTheme();
   return (
     <React.Suspense fallback={<Loading />}>
-      <div className="min-h-screen flex bg-slate-950 text-slate-100">
+      <div
+        className={clsx('min-h-screen flex', palette.bodyBg, palette.bodyText)}
+      >
         {/* Sidebar */}
         <aside className="w-64 border-r border-slate-800 bg-slate-900/80 p-4 flex flex-col">
           <h1 className="text-xl font-bold mb-4">Notion MFE</h1>
@@ -29,6 +33,10 @@ export function App() {
             <Link className="hover:text-sky-400" to="/calendar">
               Calendar
             </Link>
+
+            <Button size="sm" variant="secondary" onClick={toggleTheme}>
+              Tema: {theme === 'dark' ? 'Dark' : 'Light'}
+            </Button>
           </nav>
 
           <div className="mt-auto text-xs text-slate-500">

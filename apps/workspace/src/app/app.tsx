@@ -1,67 +1,136 @@
-import { Page, Workspace } from 'shared/src/types';
 import '../styles.css';
 
-import { useGlobalStore } from '@mfe-notion/shared';
+import * as React from 'react';
+import clsx from 'clsx';
+import { useGlobalStore, useTheme, Button, Input } from '@mfe-notion/shared';
 import { Link } from 'react-router-dom';
 
 export function App() {
-  const pages = useGlobalStore((s) => s.pages);
-  const selectedPageId = useGlobalStore((s) => s.selectedPageId);
-  const workspaces = useGlobalStore((s) => s.workspaces);
-  const selectedWorkspaceId = useGlobalStore((s) => s.selectedWorkspaceId);
-  const createPage = useGlobalStore((s) => s.createPage);
-  const selectPage = useGlobalStore((s) => s.selectPage);
+  const { pages, selectedPageId, selectWorkspace, createPage, selectPage } =
+    useGlobalStore();
 
-  const selectedWorkspace: Workspace | null =
-    workspaces.find((w) => w.id === selectedWorkspaceId) ?? null;
+  const { theme, palette, toggleTheme } = useTheme();
 
-  const workspaceName = selectedWorkspace?.name ?? 'Workspace';
+  const [search, setSearch] = React.useState('');
+
+  const workspaceName = selectWorkspace?.name ?? 'Workspace';
+
+  const filteredPages = React.useMemo(
+    () =>
+      pages.filter((p) =>
+        p.title.toLowerCase().includes(search.toLowerCase().trim())
+      ),
+    [pages, search]
+  );
+
+  const handleNewPage = () => {
+    const newTitle = prompt('Título de la nueva página:', 'Untitled');
+    createPage(newTitle || 'Untitled');
+  };
 
   return (
-    <div className="h-full flex flex-col gap-4">
-      <header className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{workspaceName}</h2>
-        <button
-          className="text-xs border border-slate-600 px-2 py-1 rounded hover:border-sky-400"
-          onClick={() => createPage('New page')}
-        >
-          + New page
-        </button>
+    <div
+      className={clsx(
+        'h-full min-h-screen flex flex-col gap-4 p-4',
+        palette.bodyBg,
+        palette.bodyText
+      )}
+    >
+      {/* Header */}
+      <header className="flex items-center justify-between gap-3">
+        <div>
+          <h1 className="text-lg font-semibold">{workspaceName}</h1>
+          <p className={clsx('text-xs', palette.subtleText)}>
+            Gestiona tus páginas. Haz clic para abrirlas en el editor de Notes.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="secondary" onClick={toggleTheme}>
+            Tema: {theme === 'dark' ? 'Dark' : 'Light'}
+          </Button>
+
+          <Button size="sm" variant="primary" onClick={handleNewPage}>
+            Nueva página
+          </Button>
+        </div>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {pages.map((page: Page) => (
-          <Link
-            to="/notes"
-            key={page.id}
-            className={`rounded-lg border p-3 cursor-pointer text-sm ${
-              page.id === selectedPageId
-                ? 'border-sky-400 bg-slate-900'
-                : 'border-slate-700 bg-slate-900/40'
-            }`}
-            onClick={(e) => {
-              e.stopPropagation();
-              selectPage(page.id);
-            }}
-          >
-            <h3 className="font-semibold mb-1">{page.title || 'Untitled'}</h3>
-            <p className="text-xs text-slate-400 line-clamp-2 whitespace-pre-line">
-              {page.content || 'Empty page'}
-            </p>
-
-            <p className="mt-2 text-[10px] text-slate-500">
-              Last update:{' '}
-              {new Date(page.updatedAt).toLocaleString(undefined, {
-                dateStyle: 'short',
-                timeStyle: 'short',
-              })}
-            </p>
-          </Link>
-        ))}
+      {/* Filtro / búsqueda */}
+      <section className="flex items-center gap-2">
+        <Input
+          placeholder="Buscar páginas..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className={clsx(palette.inputBg, palette.inputBorder, 'border')}
+        />
       </section>
 
-      <footer className="text-[10px] text-slate-500">
-        Workspace y Notes comparten el mismo Zustand global.
+      {/* Lista de páginas */}
+      <section
+        className={clsx(
+          'flex-1 overflow-auto rounded-lg p-2 border',
+          palette.panelBg,
+          palette.panelBorder
+        )}
+      >
+        {filteredPages.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-xs gap-2">
+            <p className={palette.mutedText}>
+              No hay páginas que coincidan con la búsqueda.
+            </p>
+            <Button size="sm" variant="secondary" onClick={handleNewPage}>
+              Crear la primera página
+            </Button>
+          </div>
+        ) : (
+          <ul className="flex flex-col gap-1 text-sm">
+            {filteredPages.map((page) => {
+              const isSelected = page.id === selectedPageId;
+
+              return (
+                <li key={page.id}>
+                  <Link
+                    to={'./notes'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selectPage(page.id);
+                    }}
+                    className={clsx(
+                      'w-full flex flex-col items-start text-left px-3 py-2 rounded-md border transition',
+                      isSelected ? 'border-sky-500' : palette.panelBorder,
+                      isSelected ? palette.accentSoft : 'hover:bg-slate-800/40'
+                    )}
+                  >
+                    <span className="text-[13px] font-medium truncate">
+                      {page.title || 'Untitled'}
+                    </span>
+                    {page.content && (
+                      <span
+                        className={clsx(
+                          'text-[11px] truncate',
+                          palette.subtleText
+                        )}
+                      >
+                        {page.content}
+                      </span>
+                    )}
+                    <span
+                      className={clsx('text-[10px] mt-1', palette.mutedText)}
+                    >
+                      Actualizada: {new Date(page.updatedAt).toLocaleString()}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      <footer className={clsx('text-[10px] pt-1', palette.mutedText)}>
+        Workspace MFE · Cambia el tema desde aquí y se refleja en todo el
+        sistema porque usamos Zustand global.
       </footer>
     </div>
   );
