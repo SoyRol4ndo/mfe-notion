@@ -34,10 +34,6 @@ export function App() {
         onChange={(e) => updatePageContent(page.id, e.target.value)}
         placeholder="Escribe tu contenido aquí..."
       />
-
-      <p className="text-[10px] text-slate-500">
-        Cambios sincronizados con Workspace mediante Zustand.
-      </p>
     </div>
   );
 }
