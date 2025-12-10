@@ -1,9 +1,15 @@
 import '../styles.css';
 
 import * as React from 'react';
-import { useGlobalStore } from '@mfe-notion/shared';
+import {
+  Button,
+  Input,
+  useGlobalStore,
+  useThemeColor,
+} from '@mfe-notion/shared';
 
 export function App() {
+  const { getColor } = useThemeColor();
   const selectedWorkspaceId = useGlobalStore((s) => s.selectedWorkspaceId);
   const columns = useGlobalStore((s) => s.columns);
   const tasks = useGlobalStore((s) => s.tasks);
@@ -155,7 +161,13 @@ export function App() {
   };
 
   return (
-    <div className="h-full flex gap-4 overflow-auto p-4 bg-slate-950 text-slate-100">
+    <div
+      className="h-full flex gap-4 overflow-auto p-4"
+      style={{
+        backgroundColor: getColor('background'),
+        color: getColor('text'),
+      }}
+    >
       {visibleColumns.map((col) => {
         const colTasks = tasks.filter((t) => t.columnId === col.id);
         const isNewOpen = openColumnId === col.id;
@@ -164,15 +176,22 @@ export function App() {
         return (
           <div
             key={col.id}
-            className={`w-64 flex-shrink-0 rounded p-4 flex flex-col border ${
-              isHover
-                ? 'border-sky-500 bg-slate-900'
-                : 'border-slate-700 bg-slate-900/80'
-            }`}
+            className="w-72 flex-shrink-0 rounded p-4 flex flex-col border transition"
+            style={{
+              borderColor: isHover ? getColor('primary') : getColor('border'),
+              backgroundColor: isHover
+                ? getColor('background_light1') // un poco más claro
+                : getColor('background_light'),
+            }}
             onDragOver={(e) => handleDragOverColumn(e, col.id)}
             onDrop={(e) => handleDropOnColumn(e, col.id)}
           >
-            <h3 className="text-lg font-semibold mb-3">{col.title}</h3>
+            <h3
+              className="text-lg font-semibold mb-3"
+              style={{ color: getColor('header') }}
+            >
+              {col.title}
+            </h3>
 
             {/* LISTA DE TAREAS */}
             <div className="flex-1 flex flex-col gap-2 mb-3">
@@ -184,42 +203,47 @@ export function App() {
                     <form
                       key={task.id}
                       onSubmit={(e) => saveEditing(e, task.id)}
-                      className="bg-slate-800 border border-sky-500 p-2 rounded text-xs flex flex-col gap-2"
+                      className="rounded text-xs flex flex-col gap-2 border p-2"
+                      style={{
+                        backgroundColor: getColor('background'),
+                        borderColor: getColor('primary'),
+                        color: getColor('text'),
+                      }}
                     >
-                      <input
-                        className="bg-slate-950 rounded px-2 py-1 outline-none border border-slate-700 focus:border-sky-400"
+                      <Input
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
                         placeholder="Título de la tarea"
                       />
                       <textarea
-                        className="bg-slate-950 rounded px-2 py-1 outline-none border border-slate-700 focus:border-sky-400 resize-none min-h-[60px]"
+                        className="rounded px-2 py-1 outline-none resize-none min-h-[60px] text-xs"
+                        style={{
+                          backgroundColor: getColor('background_light'),
+                          color: getColor('text'),
+                          borderColor: getColor('border'),
+                          borderWidth: 1,
+                        }}
                         value={editDescription}
                         onChange={(e) => setEditDescription(e.target.value)}
                         placeholder="Descripción / cuerpo de la tarea"
                       />
                       <div className="flex justify-between mt-1 gap-2">
-                        <button
+                        <Button
                           type="button"
+                          variant="danger"
                           onClick={() => handleDeleteTask(task.id)}
-                          className="text-[11px] px-2 py-1 rounded border border-red-500/70 text-red-300 hover:bg-red-500/10"
                         >
                           Delete
-                        </button>
+                        </Button>
                         <div className="flex gap-2">
-                          <button
+                          <Button
                             type="button"
+                            variant="secondary"
                             onClick={cancelEditing}
-                            className="text-[11px] px-2 py-1 rounded border border-slate-600 hover:border-slate-400"
                           >
                             Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="text-[11px] px-2 py-1 rounded border border-sky-500 bg-sky-600/20 hover:bg-sky-600/40"
-                          >
-                            Save
-                          </button>
+                          </Button>
+                          <Button type="submit">Save</Button>
                         </div>
                       </div>
                     </form>
@@ -229,19 +253,31 @@ export function App() {
                 return (
                   <div
                     key={task.id}
-                    className={`bg-slate-800 border p-2 rounded text-sm cursor-pointer hover:border-sky-400 transition ${
-                      draggedTaskId === task.id
-                        ? 'opacity-60'
-                        : 'border-slate-700'
-                    }`}
+                    className="border p-2 rounded text-sm cursor-pointer transition"
+                    style={{
+                      backgroundColor: getColor('background'),
+                      borderColor:
+                        draggedTaskId === task.id
+                          ? getColor('border_light')
+                          : getColor('border'),
+                      opacity: draggedTaskId === task.id ? 0.6 : 1,
+                    }}
                     draggable
                     onDragStart={(e) => handleDragStart(e, task.id)}
                     onDragEnd={handleDragEnd}
                     onClick={() => startEditingTask(task.id)}
                   >
-                    <strong className="block text-xs">{task.title}</strong>
+                    <strong
+                      className="block text-xs"
+                      style={{ color: getColor('text') }}
+                    >
+                      {task.title}
+                    </strong>
                     {task.description && (
-                      <p className="text-[11px] text-slate-400 mt-1 whitespace-pre-wrap">
+                      <p
+                        className="text-[11px] mt-1 whitespace-pre-wrap"
+                        style={{ color: getColor('text_light') }}
+                      >
                         {task.description}
                       </p>
                     )}
@@ -254,43 +290,52 @@ export function App() {
             {isNewOpen ? (
               <form
                 onSubmit={(e) => handleSubmitNew(e, col.id)}
-                className="mt-auto flex flex-col gap-2 border border-slate-700 rounded p-2 bg-slate-900/80"
+                className="mt-auto flex flex-col gap-2 rounded border p-2"
+                style={{
+                  backgroundColor: getColor('background'),
+                  borderColor: getColor('border'),
+                }}
               >
-                <input
-                  className="bg-slate-950 text-xs rounded px-2 py-1 outline-none border border-slate-700 focus:border-sky-400"
+                <Input
                   placeholder="Título de la tarea"
                   value={draftTitle}
                   onChange={(e) => setDraftTitle(e.target.value)}
                 />
                 <textarea
-                  className="bg-slate-950 text-xs rounded px-2 py-1 outline-none border border-slate-700 focus:border-sky-400 resize-none min-h-[60px]"
+                  className="text-xs rounded px-2 py-1 outline-none resize-none min-h-[60px]"
+                  style={{
+                    backgroundColor: getColor('background_light'),
+                    color: getColor('text'),
+                    borderColor: getColor('border'),
+                    borderWidth: 1,
+                  }}
                   placeholder="Descripción / cuerpo de la tarea"
                   value={draftDescription}
                   onChange={(e) => setDraftDescription(e.target.value)}
                 />
                 <div className="flex justify-end gap-2 mt-1">
-                  <button
+                  <Button
+                    variant="danger"
                     type="button"
                     onClick={handleCancelNew}
-                    className="text-[11px] px-2 py-1 rounded border border-slate-600 hover:border-slate-400"
                   >
                     Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="text-[11px] px-2 py-1 rounded border border-sky-500 bg-sky-600/20 hover:bg-sky-600/40"
-                  >
-                    Add
-                  </button>
+                  </Button>
+                  <Button type="submit">Add</Button>
                 </div>
               </form>
             ) : (
-              <button
-                className="mt-auto text-xs border border-slate-600 px-2 py-1 rounded hover:border-sky-400 transition"
+              <Button
                 onClick={() => handleOpenForm(col.id)}
+                variant="secondary"
+                style={{
+                  backgroundColor: getColor('secondary'),
+                  color: getColor('text'),
+                  borderColor: getColor('border'),
+                }}
               >
                 + Add task
-              </button>
+              </Button>
             )}
           </div>
         );

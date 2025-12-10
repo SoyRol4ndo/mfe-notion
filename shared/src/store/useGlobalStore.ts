@@ -8,7 +8,7 @@ const initialState: Pick<
   GlobalState,
   'workspaces' | 'pages' | 'selectedWorkspaceId' | 'selectedPageId' | 'theme'
 > = {
-  theme: 'dark',
+  theme: 'light',
   workspaces: [
     {
       id: initialWorkspaceId,

@@ -1,4 +1,3 @@
-import '../styles.css';
 import { useGlobalStore } from '@mfe-notion/shared';
 
 export function App() {
@@ -18,7 +17,7 @@ export function App() {
   }
 
   return (
-    <div className="h-full flex flex-col gap-4">
+    <div className="h-full flex flex-col gap-4 p-4">
       {/* Título */}
       <input
         className="bg-transparent text-2xl font-bold outline-none border border-slate-700 rounded px-3 py-2 focus:border-sky-400"

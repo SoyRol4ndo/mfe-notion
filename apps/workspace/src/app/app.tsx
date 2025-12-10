@@ -109,7 +109,7 @@ export function App() {
           />
           {search && (
             <CgClose
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:bg-gray-200 p-1 rounded-full"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer p-1 rounded-full"
               size={25}
               onClick={() => setSearch('')}
             />
@@ -202,7 +202,7 @@ export function App() {
         onConfirm={handleConfirmNewPage}
         confirmText="Aceptar"
         cancelText="Cancelar"
-        onDisabled={!!newPageTitle.trim()}
+        // onDisabled={!newPageTitle.trim}
       >
         <div className="flex flex-col gap-2">
           <label className="text-xs text-slate-400">Título de la página</label>

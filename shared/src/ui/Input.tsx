@@ -29,13 +29,15 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           placeholder={placeholder}
           className={clsx(
-            'w-full rounded-md px-3 py-2 text-sm outline-none transition',
+            'w-full rounded-md px-3 py-2 text-sm outline-none transition border',
+            error && 'border-red-500',
             className
           )}
           style={{
-            backgroundColor: getColor('background_dark'),
+            backgroundColor: getColor('background_light'),
             color: getColor('text'),
             borderColor: error ? getColor('delete') : getColor('border'),
+            borderWidth: '1px',
           }}
           {...props}
         />
