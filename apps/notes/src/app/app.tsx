@@ -1,6 +1,7 @@
-import { useGlobalStore } from '@mfe-notion/shared';
+import { Input, useGlobalStore, useThemeColor } from '@mfe-notion/shared';
 
 export function App() {
+  const { getColor } = useThemeColor();
   const page = useGlobalStore((s) =>
     s.pages.find((p) => p.id === s.selectedPageId)
   );
@@ -19,8 +20,8 @@ export function App() {
   return (
     <div className="h-full flex flex-col gap-4 p-4">
       {/* Título */}
-      <input
-        className="bg-transparent text-2xl font-bold outline-none border border-slate-700 rounded px-3 py-2 focus:border-sky-400"
+      <Input
+        label="Titulo"
         value={page.title}
         onChange={(e) => renamePage(page.id, e.target.value || 'Untitled')}
         placeholder="Untitled"
@@ -30,6 +31,7 @@ export function App() {
       <textarea
         className="flex-1 bg-transparent text-sm outline-none border border-slate-700 rounded px-3 py-2 focus:border-sky-400 resize-none leading-relaxed"
         value={page.content}
+        style={{ borderColor: getColor('border') }}
         onChange={(e) => updatePageContent(page.id, e.target.value)}
         placeholder="Escribe tu contenido aquí..."
       />

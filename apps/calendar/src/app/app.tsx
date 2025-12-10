@@ -7,7 +7,11 @@ import {
   useThemeColor,
 } from '@mfe-notion/shared';
 import { Page, Task } from 'shared/src/types';
-import { IoMdArrowRoundBack, IoMdArrowForward } from 'react-icons/io';
+import {
+  IoMdArrowRoundBack,
+  IoMdArrowForward,
+  IoMdCalendar,
+} from 'react-icons/io';
 import { PageCard } from '../components/PageCard';
 import { TaskCard } from '../components/TaskCard';
 
@@ -472,7 +476,9 @@ export function App() {
             </div>
 
             <div className="flex justify-end mt-1">
-              <Button type="submit">Añadir al calendario</Button>
+              <Button type="submit" icon={<IoMdCalendar />}>
+                Añadir al calendario
+              </Button>
             </div>
           </form>
 

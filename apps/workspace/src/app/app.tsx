@@ -14,10 +14,9 @@ import { BiPlus, BiSearch } from 'react-icons/bi';
 import { CgClose } from 'react-icons/cg';
 
 export function App() {
-  const { pages, selectedPageId, createPage, selectPage, toggleTheme } =
-    useGlobalStore();
+  const { pages, selectedPageId, createPage, selectPage } = useGlobalStore();
 
-  const { getColor, theme } = useThemeColor();
+  const { getColor } = useThemeColor();
 
   const [search, setSearch] = React.useState('');
   const [isNewPageModalOpen, setIsNewPageModalOpen] = React.useState(false);
@@ -71,20 +70,14 @@ export function App() {
           </h1>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button size="lg" variant="secondary" onClick={toggleTheme}>
-            Tema: {theme === 'dark' ? 'Dark' : 'Light'}
-          </Button>
-
-          <Button
-            size="lg"
-            variant="primary"
-            onClick={openNewPageModal}
-            icon={<BiPlus />}
-          >
-            Nueva página
-          </Button>
-        </div>
+        <Button
+          size="lg"
+          variant="primary"
+          onClick={openNewPageModal}
+          icon={<BiPlus />}
+        >
+          Nueva página
+        </Button>
       </header>
 
       {/* Filtro / búsqueda */}

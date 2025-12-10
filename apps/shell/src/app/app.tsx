@@ -1,13 +1,9 @@
-import {
-  Button,
-  Loading,
-  useThemeColor,
-  useGlobalStore,
-} from '@mfe-notion/shared';
+import { Loading, useThemeColor } from '@mfe-notion/shared';
 import clsx from 'clsx';
 import * as React from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import '../styles.css';
+import { ThemeSwitch } from '../components/ThemeSwitch';
 
 // Ajusta los nombres de los remotes según tu config
 const Workspace = React.lazy(() => import('workspace/Module'));
@@ -16,8 +12,7 @@ const Tasks = React.lazy(() => import('tasks/Module'));
 const Calendar = React.lazy(() => import('calendar/Module'));
 
 export function App() {
-  const { getColor, theme } = useThemeColor();
-  const toggleTheme = useGlobalStore((s) => s.toggleTheme);
+  const { getColor } = useThemeColor();
 
   return (
     <React.Suspense fallback={<Loading />}>
@@ -72,34 +67,21 @@ export function App() {
             >
               Calendar
             </Link>
-
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={toggleTheme}
-              style={{
-                marginTop: '0.75rem',
-                backgroundColor: getColor('btn_dark_bg'),
-                color: getColor('btn_dark_text'),
-                borderColor: getColor('border_light'),
-              }}
-            >
-              Tema: {theme === 'dark' ? 'Dark' : 'Light'}
-            </Button>
           </nav>
 
           <div
             className="mt-auto text-xs"
-            style={{ color: getColor('text_light') }}
+            style={{
+              color: getColor('text_light'),
+            }}
           >
+            <ThemeSwitch />
             <p>Demo modular con microfrontends</p>
           </div>
         </aside>
 
         {/* Contenido principal */}
         <main className="flex-1 flex flex-col">
-          {/* Top bar */}
-
           {/* Router outlet */}
           <section
             className="flex-1 overflow-auto"
