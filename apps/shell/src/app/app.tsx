@@ -1,9 +1,10 @@
 import { Loading, useThemeColor } from '@mfe-notion/shared';
 import clsx from 'clsx';
 import * as React from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import '../styles.css';
 import { ThemeSwitch } from '../components/ThemeSwitch';
+import { SidebarNavigation } from '../components/SidebarNavigation';
 
 // Ajusta los nombres de los remotes según tu config
 const Workspace = React.lazy(() => import('workspace/Module'));
@@ -38,36 +39,7 @@ export function App() {
             Notion MFE
           </h1>
 
-          <nav className="flex flex-col gap-2 text-sm mb-4">
-            <Link
-              className="hover:underline"
-              style={{ color: getColor('text') }}
-              to="/"
-            >
-              Workspace
-            </Link>
-            <Link
-              className="hover:underline"
-              style={{ color: getColor('text') }}
-              to="/notes"
-            >
-              Notes
-            </Link>
-            <Link
-              className="hover:underline"
-              style={{ color: getColor('text') }}
-              to="/tasks"
-            >
-              Tasks
-            </Link>
-            <Link
-              className="hover:underline"
-              style={{ color: getColor('text') }}
-              to="/calendar"
-            >
-              Calendar
-            </Link>
-          </nav>
+          <SidebarNavigation />
 
           <div
             className="mt-auto text-xs"
@@ -76,7 +48,7 @@ export function App() {
             }}
           >
             <ThemeSwitch />
-            <p>Demo modular con microfrontends</p>
+            <p className="mt-2">Demo modular con microfrontends</p>
           </div>
         </aside>
 

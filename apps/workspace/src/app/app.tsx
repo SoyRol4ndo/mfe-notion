@@ -195,7 +195,7 @@ export function App() {
         onConfirm={handleConfirmNewPage}
         confirmText="Aceptar"
         cancelText="Cancelar"
-        // onDisabled={!newPageTitle.trim}
+        onDisabled={!newPageTitle.trim()}
       >
         <div className="flex flex-col gap-2">
           <label className="text-xs text-slate-400">Título de la página</label>
