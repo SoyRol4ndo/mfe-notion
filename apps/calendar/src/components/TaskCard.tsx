@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { ColorKey } from '@mfe-notion/shared';
+import { ColorKey } from 'shared/src/theme/theme';
 
 type TaskCardProps = {
   task: {

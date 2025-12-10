@@ -1,82 +1,141 @@
-# MfeNotion
+# 📘 Notion MFE — Plataforma Modular con Microfrontends (Nx + React + Rspack + Module Federation)
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Bienvenido a **Notion MFE**, una plataforma modular inspirada en Notion, construida utilizando **Microfrontends**, **Nx**, **React**, **Rspack**, y **Module Federation**.  
+El objetivo del proyecto es demostrar una arquitectura escalable, desacoplada y mantenible, donde cada módulo puede evolucionar de forma independiente.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+---
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 🚀 Tecnologías Principales
 
-## Finish your remote caching setup
+- **Nx Workspace** → Monorepo y orquestación de builds/serve
+- **React 18**
+- **Rspack** → Bundler ultrarrápido compatible con Module Federation
+- **Webpack Module Federation** → Carga remota de microfrontends
+- **Zustand** → Estado global compartido entre remotes
+- **TailwindCSS** → Estilos modernos y rápidos
+- **TypeScript**
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/Heu0AvjaI0)
+---
 
+## 🏗️ Arquitectura del Proyecto
 
-## Run tasks
-
-To run the dev server for your app, use:
-
-```sh
-npx nx serve shell
+```
+mfe-notion/
+│
+├── apps/
+│ ├── shell/ → Host principal
+│ ├── workspace/ → MFE: administración de páginas
+│ ├── notes/ → MFE: editor de contenido estilo Notion
+│ ├── tasks/ → MFE: tablero Kanban
+│ └── calendar/ → MFE: planificación mensual
+│
+├── shared/
+│ ├── ui/ → Componentes reutilizables (Button, Input, Modal, Switch…)
+│ ├── store/ → Zustand con estado global compartido
+│ ├── theme/ → Paleta dinámica Light/Dark y hook useThemeColor
+│ └── index.ts → Barrel file exportable vía Module Federation
+│
+└── module-federation.config.ts
 ```
 
-To create a production bundle:
+---
 
-```sh
-npx nx build shell
+## 🧩 Microfrontends
+
+### 🟦 Shell (Host)
+
+Controla navegación, tema global y carga dinámica de remotes.
+
+### 🟩 Workspace
+
+Gestión de páginas: crear, renombrar, seleccionar, buscar.
+
+### 🟨 Notes
+
+Editor estilo Notion sincronizado en tiempo real.
+
+### 🟪 Tasks
+
+Tablero Kanban con **drag & drop entre columnas**.
+
+### 🟧 Calendar
+
+Calendario con creación de notas o tareas por día o rango.
+
+---
+
+## 🎨 Tema Dinámico (Light/Dark)
+
+El sistema usa una paleta compartida y `useThemeColor()` para adaptar todos los remotes de forma sincronizada.
+
+---
+
+## 🧰 Scripts Útiles
+
+```bash
+# 🟦 1) Levantar todos los remotos en paralelo (NO incluye el shell)
+npm run dev:remotes
+
+# 🟧 2) Levantar el shell con remotos cargados dinámicamente
+npm run dev:shell
+
+# 🟨 3) Levantar el shell solo (sin forzar carga dinámica)
+npm run shell
+
+# 🟩 4) Levantar un remote individualmente
+npm run workspace
+npm run notes
+npm run tasks
+npm run calendar
 ```
 
-To see all available targets to run for a project, run:
+### 📌 Explicación rápida
 
-```sh
-npx nx show project shell
+| Script                     | ¿Qué hace?                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| `npm run dev:remotes`      | Levanta **solo los remotos** (workspace, notes, tasks, calendar).                    |
+| `npm run dev:shell`        | Levanta **el shell**, cargando los remotos dinámicamente usando `NX_MF_DEV_REMOTES`. |
+| `npm run shell`            | Levanta **solo el shell**, sin forzar carga dinámica.                                |
+| `npm run workspace` (etc.) | Levanta un remote individual para desarrollo aislado.                                |
+
+---
+
+## 📦 Instalación
+
+```bash
+npm install
+npm run shell
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## 🌐 Ejecución
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+El host se levanta en:
 
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/react:app demo
+```bash
+  http://localhost:4200
 ```
 
-To generate a new library, use:
+Los remotes se exponen en:
 
-```sh
-npx nx g @nx/react:lib mylib
+```bash
+  http://localhost:4201  (notes)
+  http://localhost:4202  (workspace)
+  http://localhost:4203  (tasks)
+  http://localhost:4204  (calendar)
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+---
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🧪 Objetivo del Proyecto
 
+Simular un entorno profesional de microfrontends donde:
+• Cada equipo podría trabajar en su propio remote
+• Los remotes pueden desplegarse por separado
+• El shell orquesta todo
+• El estado global asegura sincronización entre apps
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Install Nx Console
+## 📜 Licencia
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Proyecto educativo. Sin restricciones.

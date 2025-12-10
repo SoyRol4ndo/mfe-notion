@@ -1,5 +1,5 @@
-import { ColorKey } from '@mfe-notion/shared';
 import * as React from 'react';
+import { ColorKey } from 'shared/src/theme/theme';
 
 type PageCardProps = {
   page: {
