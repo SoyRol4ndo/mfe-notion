@@ -1,8 +1,15 @@
 import '../styles.css';
 import * as React from 'react';
-import { Button, Input, useGlobalStore } from '@mfe-notion/shared';
+import {
+  Button,
+  Input,
+  useGlobalStore,
+  useThemeColor,
+} from '@mfe-notion/shared';
 import { Page, Task } from 'shared/src/types';
 import { IoMdArrowRoundBack, IoMdArrowForward } from 'react-icons/io';
+import { PageCard } from '../components/PageCard';
+import { TaskCard } from '../components/TaskCard';
 
 type CalendarItem =
   | { kind: 'page'; page: Page; dateKey: string }
@@ -36,6 +43,7 @@ export function App() {
   const pages = useGlobalStore((s) => s.pages);
   const tasks = useGlobalStore((s) => s.tasks);
   const selectedWorkspaceId = useGlobalStore((s) => s.selectedWorkspaceId);
+  const { getColor } = useThemeColor();
 
   const createPageWithSchedule = useGlobalStore(
     (s) => s.createPageWithSchedule
@@ -213,25 +221,59 @@ export function App() {
   };
 
   return (
-    <div className="h-full flex flex-col gap-4 text-slate-100">
+    <div
+      className="h-full flex flex-col gap-4 p-4"
+      style={{ color: getColor('text') }}
+    >
       <header className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">Calendar</h2>
-          <p className="text-xs text-slate-400">
+          <p style={{ color: getColor('text_light') }} className="text-xs">
             Crea notas o tareas planificadas por día o rango de días.
           </p>
         </div>
+
         <div className="flex items-center gap-2 text-sm">
-          <Button onClick={goPrevMonth} icon={<IoMdArrowRoundBack />} />
+          <Button
+            onClick={goPrevMonth}
+            icon={<IoMdArrowRoundBack />}
+            style={{
+              backgroundColor: getColor('background_light'),
+              borderColor: getColor('border'),
+              color: getColor('text'),
+            }}
+          />
           <span className="px-2">{monthLabel}</span>
-          <Button onClick={goNextMonth} icon={<IoMdArrowForward />} />
+          <Button
+            onClick={goNextMonth}
+            icon={<IoMdArrowForward />}
+            style={{
+              backgroundColor: getColor('background_light'),
+              borderColor: getColor('border'),
+              color: getColor('text'),
+            }}
+          />
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-[2fr,1.4fr] gap-6 h-[calc(100vh-120px)]">
-        {/* Calendario mensual */}
-        <section className="border border-slate-800 rounded-lg p-3 bg-slate-900/60 flex flex-col">
-          <div className="grid grid-cols-7 text-[11px] text-slate-400 mb-1">
+      {/* GRID LAYOUT */}
+      <div
+        className="grid grid-cols-1 md:grid-cols-[2fr,1.4fr] gap-6 h-[calc(100vh-120px)]"
+        style={{ color: getColor('text') }}
+      >
+        {/* CALENDARIO MENSUAL */}
+        <section
+          className="rounded-lg p-3 flex flex-col"
+          style={{
+            backgroundColor: getColor('background_dark'),
+            border: `1px solid ${getColor('border')}`,
+          }}
+        >
+          {/* Cabecera días de la semana */}
+          <div
+            className="grid grid-cols-7 text-[11px] mb-1"
+            style={{ color: getColor('text_light') }}
+          >
             {weekDays.map((d) => (
               <div key={d} className="text-center py-1">
                 {d}
@@ -239,6 +281,7 @@ export function App() {
             ))}
           </div>
 
+          {/* Celdas del calendario */}
           <div className="grid grid-cols-7 gap-1 flex-1">
             {calendarDays.map((day) => {
               const key = day.key;
@@ -251,23 +294,38 @@ export function App() {
                   key={key}
                   type="button"
                   onClick={() => setSelectedDayKey(key)}
-                  className={[
-                    'h-16 rounded-md border text-xs flex flex-col items-center justify-center transition',
-                    day.isCurrentMonth
-                      ? 'border-slate-700 bg-slate-900 hover:border-sky-400'
-                      : 'border-slate-800 bg-slate-950/40 text-slate-600 hover:border-slate-700',
-                    isSelected && 'border-sky-500 ring-1 ring-sky-500',
-                    isToday && 'outline outline-1 outline-emerald-500/60',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
+                  style={{
+                    border: `1px solid ${
+                      isSelected
+                        ? getColor('primary')
+                        : day.isCurrentMonth
+                        ? getColor('border')
+                        : getColor('border_light')
+                    }`,
+                    backgroundColor: day.isCurrentMonth
+                      ? getColor('background')
+                      : getColor('background_dark'),
+                    outline: isToday
+                      ? `1px solid ${getColor('success')}`
+                      : 'none',
+                    color: day.isCurrentMonth
+                      ? getColor('text')
+                      : getColor('text_light'),
+                  }}
+                  className="h-16 rounded-md text-xs flex flex-col items-center justify-center transition"
                 >
                   <span className="text-sm font-medium">
                     {day.date.getDate()}
                   </span>
 
                   {items.length > 0 && (
-                    <span className="mt-1 inline-flex px-2 py-[1px] rounded-full bg-sky-600/20 text-[10px] text-sky-300">
+                    <span
+                      className="mt-1 inline-flex px-2 py-[1px] rounded-full text-[10px]"
+                      style={{
+                        backgroundColor: getColor('accent') + '33',
+                        color: getColor('accent'),
+                      }}
+                    >
                       {items.length} item(s)
                     </span>
                   )}
@@ -277,88 +335,105 @@ export function App() {
           </div>
         </section>
 
-        {/* Panel derecho: formulario + lista del día */}
-        <section className="border border-slate-800 rounded-lg p-3 bg-slate-900/60 flex flex-col gap-3">
-          {/* Formulario */}
+        {/* PANEL DERECHO */}
+        <section
+          className="rounded-lg p-3 flex flex-col gap-3"
+          style={{
+            backgroundColor: getColor('background_dark'),
+            border: `1px solid ${getColor('border')}`,
+            color: getColor('text'),
+          }}
+        >
+          {/* FORMULARIO */}
           <form
             onSubmit={handleCreateItem}
-            className="border border-slate-700 rounded p-3 text-xs flex flex-col gap-2 bg-slate-950/60"
+            className="rounded p-3 flex flex-col gap-2"
+            style={{
+              border: `1px solid ${getColor('border')}`,
+              backgroundColor: getColor('background'),
+              color: getColor('text'),
+            }}
           >
             <div className="flex justify-between items-center mb-1">
-              <span className="font-semibold text-sm">
-                Nuevo item para calendario
-              </span>
-              <span className="text-[10px] text-slate-400">
+              <span className="font-semibold text-sm">Nuevo item</span>
+              <span
+                className="text-[10px]"
+                style={{ color: getColor('text_light') }}
+              >
                 Día base: {selectedDayKey}
               </span>
             </div>
 
-            <div className="flex gap-2">
-              <label className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="type"
-                  value="page"
-                  checked={type === 'page'}
-                  onChange={() => setType('page')}
-                />
-                <span>Nota</span>
-              </label>
-              <label className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="type"
-                  value="task"
-                  checked={type === 'task'}
-                  onChange={() => setType('task')}
-                />
-                <span>Task</span>
-              </label>
-            </div>
-
+            {/* Radios: nota / task */}
             <div className="flex gap-2 text-[11px]">
-              <label className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="mode"
-                  value="single"
-                  checked={rangeMode === 'single'}
-                  onChange={() => setRangeMode('single')}
-                />
-                <span>Un día</span>
-              </label>
-              <label className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="mode"
-                  value="range"
-                  checked={rangeMode === 'range'}
-                  onChange={() => setRangeMode('range')}
-                />
-                <span>Rango de días</span>
-              </label>
+              {['page', 'task'].map((opt) => (
+                <label className="flex items-center gap-1" key={opt}>
+                  <input
+                    type="radio"
+                    name="type"
+                    value={opt}
+                    checked={type === opt}
+                    onChange={() => setType(opt as 'page' | 'task')}
+                  />
+                  <span>{opt === 'page' ? 'Nota' : 'Task'}</span>
+                </label>
+              ))}
             </div>
 
+            {/* Radios: un día / rango */}
+            <div className="flex gap-2 text-[11px]">
+              {['single', 'range'].map((opt) => (
+                <label className="flex items-center gap-1" key={opt}>
+                  <input
+                    type="radio"
+                    name="mode"
+                    value={opt}
+                    checked={rangeMode === opt}
+                    onChange={() => setRangeMode(opt as 'single' | 'range')}
+                  />
+                  <span>{opt === 'single' ? 'Un día' : 'Rango de días'}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* Fechas */}
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className="block text-[10px] text-slate-400 mb-1">
+                <label
+                  className="block text-[10px] mb-1"
+                  style={{ color: getColor('text_light') }}
+                >
                   Inicio
                 </label>
                 <input
                   type="date"
-                  className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 outline-none text-xs"
+                  className="w-full rounded px-2 py-1 outline-none text-xs"
+                  style={{
+                    backgroundColor: getColor('background_dark'),
+                    border: `1px solid ${getColor('border')}`,
+                    color: getColor('text'),
+                  }}
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                 />
               </div>
+
               {rangeMode === 'range' && (
                 <div className="flex-1">
-                  <label className="block text-[10px] text-slate-400 mb-1">
+                  <label
+                    className="block text-[10px] mb-1"
+                    style={{ color: getColor('text_light') }}
+                  >
                     Fin
                   </label>
                   <input
                     type="date"
-                    className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 outline-none text-xs"
+                    className="w-full rounded px-2 py-1 outline-none text-xs"
+                    style={{
+                      backgroundColor: getColor('background_dark'),
+                      border: `1px solid ${getColor('border')}`,
+                      color: getColor('text'),
+                    }}
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                   />
@@ -366,31 +441,33 @@ export function App() {
               )}
             </div>
 
-            <div>
-              <Input
-                className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 outline-none text-xs"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder={
-                  type === 'page' ? 'Título de la nota' : 'Título de la tarea'
-                }
-                label="Título"
-              />
-            </div>
+            {/* Título */}
+            <Input
+              label="Título"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={
+                type === 'page' ? 'Título de la nota' : 'Título de la tarea'
+              }
+            />
 
+            {/* Descripción */}
             <div>
-              <label className="block text-[10px] text-slate-400 mb-1">
+              <label
+                className="block text-[10px] mb-1"
+                style={{ color: getColor('text_light') }}
+              >
                 Descripción / contenido
               </label>
               <textarea
-                className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 outline-none text-xs resize-none min-h-[60px]"
+                className="w-full rounded px-2 py-1 outline-none text-xs resize-none min-h-[60px]"
+                style={{
+                  backgroundColor: getColor('background_dark'),
+                  border: `1px solid ${getColor('border')}`,
+                  color: getColor('text'),
+                }}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder={
-                  type === 'page'
-                    ? 'Contenido inicial de la nota...'
-                    : 'Descripción de la tarea...'
-                }
               />
             </div>
 
@@ -399,73 +476,25 @@ export function App() {
             </div>
           </form>
 
-          {/* Lista de items del día seleccionado */}
+          {/* LISTA DEL DÍA */}
           <div className="flex-1 flex flex-col gap-2 overflow-auto text-xs">
             <h3 className="text-sm font-semibold mb-1">
               Items para el {selectedDayKey}
             </h3>
 
             {selectedItems.length === 0 && (
-              <p className="text-[11px] text-slate-500">
-                No hay notas ni tareas planificadas para esta fecha.
+              <p style={{ color: getColor('text_light') }}>
+                No hay notas ni tareas para esta fecha.
               </p>
             )}
 
-            {selectedItems.map((item, idx) => {
-              if (item.kind === 'page') {
-                const page = item.page;
-                return (
-                  <div
-                    key={`page-${page.id}-${idx}`}
-                    className="border border-slate-700 rounded p-2 bg-slate-950/60"
-                  >
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-[10px] px-1 py-[1px] rounded bg-emerald-600/20 text-emerald-300">
-                        Nota
-                      </span>
-                      <span className="text-[10px] text-slate-500">
-                        {new Date(page.updatedAt).toLocaleTimeString('es-ES', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                    </div>
-                    <strong className="block text-[13px] mb-1">
-                      {page.title || 'Untitled'}
-                    </strong>
-                    <p className="text-[11px] text-slate-400 line-clamp-3 whitespace-pre-line">
-                      {page.content || 'Nota sin contenido.'}
-                    </p>
-                  </div>
-                );
-              }
-
-              const task = item.task;
-              return (
-                <div
-                  key={`task-${task.id}-${idx}`}
-                  className="border border-slate-700 rounded p-2 bg-slate-950/60"
-                >
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-[10px] px-1 py-[1px] rounded bg-sky-600/20 text-sky-300">
-                      Task
-                    </span>
-                    <span className="text-[10px] text-slate-500">
-                      {new Date(task.updatedAt).toLocaleTimeString('es-ES', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
-                  <strong className="block text-[13px] mb-1">
-                    {task.title || 'Untitled task'}
-                  </strong>
-                  <p className="text-[11px] text-slate-400 line-clamp-3 whitespace-pre-line">
-                    {task.description || 'Tarea sin descripción.'}
-                  </p>
-                </div>
-              );
-            })}
+            {selectedItems.map((item, idx) =>
+              item.kind === 'page' ? (
+                <PageCard key={idx} page={item.page} getColor={getColor} />
+              ) : (
+                <TaskCard key={idx} task={item.task} getColor={getColor} />
+              )
+            )}
           </div>
         </section>
       </div>
